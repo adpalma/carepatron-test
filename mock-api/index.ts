@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { v4 as uuid } from 'uuid';
 
-import { store, addClient, updateClient, removeClient, listClients } from './data/store';
+import { store, addClient, updateClient, removeClient, listClients, getClient } from './data/store';
 
 dotenv.config();
 
@@ -30,6 +30,12 @@ app.get('/clients', (req: Request, res: Response) => {
 	res.send(listClients());
 });
 
+// get clients
+app.get('/clients/:id', (req: Request, res: Response) => {
+	const { id } = req.params
+	res.send(getClient(id));
+});
+
 // create client
 app.post('/clients', (req: Request, res: Response) => {
 	const client: IClient = { ...req.body, id: new Date().toISOString() };
@@ -44,4 +50,5 @@ app.put('/clients/:id', (req: Request, res: Response) => {
 	updateClient(client);
 
 	res.status(204);
+	res.end();
 });

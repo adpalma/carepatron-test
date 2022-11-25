@@ -9,5 +9,5 @@ export const createClient = (client: IClient): Promise<void> => {
 };
 
 export const updateClient = (client: IClient): Promise<void> => {
-  return apiClient.put<void>("clients", client);
+  return apiClient.put<void>(`clients/${client.id}`, client);
 };

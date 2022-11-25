@@ -7,6 +7,20 @@ export const store: IStore = {
 			email: 'john@gmail.com',
 			phoneNumber: '+6192099102',
 		},
+		'01-aa-bb': {
+			id: '01-aa-bb',
+			firstName: 'Evans',
+			lastName: 'Smith',
+			email: 'john@gmail.com',
+			phoneNumber: '+6192099102',
+		},
+		'02-aa-bb': {
+			id: '02-aa-bb',
+			firstName: 'Smith',
+			lastName: 'Evans',
+			email: 'john@gmail.com',
+			phoneNumber: '+6192099102',
+		},
 	},
 };
 
@@ -35,3 +49,7 @@ export const listClients = () => {
 		return 0;
 	});
 };
+
+export const getClient = (id: string) => {
+	return store.entities[id];
+}

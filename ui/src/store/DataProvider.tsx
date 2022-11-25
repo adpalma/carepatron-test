@@ -15,6 +15,7 @@ export const StateContext = createContext<{
 export const ACTIONS = {
 	FETCH_ALL_CLIENTS: 'FETCH_ALL_CLIENTS',
 	CREATE_CLIENT: 'CREATE_CLIENT',
+	UPDATE_CLIENT: 'UPDATE_CLIENT',
 };
 
 type Action = {
@@ -27,7 +28,9 @@ const reducer = (state: IApplicationState, action: Action) => {
 		case ACTIONS.FETCH_ALL_CLIENTS:
 			return { ...state, clients: action.data };
 		case ACTIONS.CREATE_CLIENT:
-			return { ...state, clients: [action.data, ...state.clients] };
+			return { ...state, clients: [...state.clients, action.data] };
+		case ACTIONS.UPDATE_CLIENT:
+			return { ...state };
 		default:
 			return state;
 	}

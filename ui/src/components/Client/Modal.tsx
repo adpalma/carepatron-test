@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
 	Box,
@@ -16,15 +16,7 @@ import {
 	StepLabel,
 } from '@mui/material';
 import { ArrowBack, Close } from '@mui/icons-material';
-
-type CloseHandler = () => void;
-type CompleteHandler = (client: IClient) => void;
-
-type ModalProps = {
-	open: boolean;
-	onClose: CloseHandler;
-	onComplete: CompleteHandler;
-};
+import { toCamelCase } from '../../utils';
 
 const styles = {
 	modal: {
@@ -55,7 +47,28 @@ const styles = {
 
 const steps = ['Personal details', 'Contact details'];
 
-const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete }: ModalProps) => {
+type CloseHandler = () => void;
+type CompleteHandler = (client: IClient) => void;
+
+type CommonProps = {
+	open: boolean;
+	onClose: CloseHandler;
+	onComplete: CompleteHandler;
+};
+
+type ConditionalProps =
+	| {
+			type: 'create';
+			client?: never;
+		}
+	| {
+			type: 'update';
+			client: IClient;
+		};
+
+type ModalProps = CommonProps & ConditionalProps;
+
+const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete, type, client }: ModalProps) => {
 	const [activeStep, setActiveStep] = React.useState(0);
 	const [completed, setCompleted] = React.useState<{
 		[k: number]: boolean;
@@ -71,6 +84,15 @@ const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete }: ModalP
 		phoneNumber: false,
 	});
 	const totalSteps = steps.length;
+
+	useEffect(() => {
+		if (client) {
+			setFirstName(client.firstName);
+			setLastName(client.lastName);
+			setEmail(client.email);
+			setPhoneNumber(client.phoneNumber);
+		}
+	}, [client])
 
 	const handleStep = (step: number) => () => {
 		setActiveStep(step);
@@ -126,15 +148,26 @@ const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete }: ModalP
 		if (!isLastStep()) {
 			setActiveStep(activeStep + 1);
 		} else if (isLastStep()) {
-			const id = uuidv4();
-			const newClient: IClient = {
-				id,
-				firstName,
-				lastName,
-				email,
-				phoneNumber,
-			};
-			onComplete(newClient);
+			if (type === 'create') {
+				const id = uuidv4();
+				const newClient: IClient = {
+					id,
+					firstName,
+					lastName,
+					email,
+					phoneNumber,
+				};
+				onComplete(newClient);
+			} else {
+				const newClient: IClient = {
+					id: client.id,
+					firstName,
+					lastName,
+					email,
+					phoneNumber,
+				};
+				onComplete(newClient!);
+			}
 			resetFields();
 			onClose();
 		}
@@ -222,7 +255,7 @@ const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete }: ModalP
 				<Grid container style={styles.header}>
 					<Grid item>
 						<Typography id='modal-modal-title' variant='h6' component='h2'>
-							Create new client
+							{type === 'create' ? 'Create new client' : 'Update client'}
 						</Typography>
 					</Grid>
 					<Grid item>
@@ -249,7 +282,7 @@ const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete }: ModalP
 					</Grid>
 					<Grid item>
 						<Button variant='contained' onClick={handleNext}>
-							{isLastStep() ? 'Create client' : 'Continue'}
+							{isLastStep() ? `${toCamelCase(type)} client` : 'Continue'}
 						</Button>
 					</Grid>
 				</Grid>

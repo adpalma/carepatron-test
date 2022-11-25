@@ -13,7 +13,17 @@ const styles = {
 	},
 };
 
-export default function BasicTable({ clients }: { clients: IClient[] }) {
+export interface IProps {
+	clients: IClient[];
+	onUpdate?: (client: IClient) => void 
+}
+
+export default function BasicTable({ clients, onUpdate }: IProps) {
+	const handleUpdate = (client: IClient) => {
+		if (onUpdate) {
+			onUpdate(client)
+		}
+	}
 	return (
 		<TableContainer component={Paper} sx={{ maxWidth: '100%' }}>
 			<Table sx={{ minWidth: 400 }} aria-label='simple table'>
@@ -26,7 +36,7 @@ export default function BasicTable({ clients }: { clients: IClient[] }) {
 				</TableHead>
 				<TableBody>
 					{clients.map((client) => (
-						<ClientRow key={client.id} client={client} />
+						<ClientRow key={client.id} client={client} onUpdate={() => handleUpdate(client)}/>
 					))}
 					{!clients ||
 						(!clients.length && (

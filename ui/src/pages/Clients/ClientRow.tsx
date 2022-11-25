@@ -1,8 +1,5 @@
 import { TableCell, TableRow } from '@mui/material';
 
-export interface IProps {
-	client: IClient;
-}
 
 const styles = {
 	name: {
@@ -11,9 +8,20 @@ const styles = {
 	},
 };
 
-export default function ClientListItem({ client }: IProps) {
+export interface IProps {
+	client: IClient;
+	onUpdate?: (client: IClient) => void 
+}
+
+export default function ClientListItem({ client, onUpdate }: IProps) {
 	const { id, firstName, lastName, email, phoneNumber } = client;
 
+	const handleUpdate = () => {
+		if (onUpdate) {
+			onUpdate(client)
+		}
+	}
+	
 	return (
 		<TableRow
 			key={id}
@@ -25,7 +33,7 @@ export default function ClientListItem({ client }: IProps) {
 				},
 			}}
 		>
-			<TableCell component='th' scope='row' sx={styles.name}>
+			<TableCell component='th' scope='row' sx={styles.name} onClick={handleUpdate}>
 				{firstName} {lastName}
 			</TableCell>
 			<TableCell>{phoneNumber}</TableCell>
