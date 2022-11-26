@@ -15,6 +15,8 @@ import {
 	Typography,
 	StepLabel,
 } from '@mui/material';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { ArrowBack, Close } from '@mui/icons-material';
 import { toCamelCase } from '../../utils';
 
@@ -69,8 +71,10 @@ type ConditionalProps =
 type ModalProps = CommonProps & ConditionalProps;
 
 const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete, type, client }: ModalProps) => {
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const [activeStep, setActiveStep] = React.useState(0);
-	const [completed, setCompleted] = React.useState<{
+	const [completed] = React.useState<{
 		[k: number]: boolean;
 	}>({});
 	const [firstName, setFirstName] = useState('');
@@ -251,7 +255,7 @@ const ClientModal: React.FC<ModalProps> = ({ open, onClose, onComplete, type, cl
 
 	return (
 		<Modal open={open} onClose={handleClose} hideBackdrop>
-			<Box sx={styles.modal}>
+			<Box sx={{...styles.modal, width: isMobile ? 300 : 400}}>
 				<Grid container style={styles.header}>
 					<Grid item>
 						<Typography id='modal-modal-title' variant='h6' component='h2'>
